@@ -10,24 +10,55 @@
 #include <stdio.h>
 #include <string.h>
 #include "look_up_tab.h"
+#include <math.h>
 
-#define MAX_OPENING_DEG 172.8
+#define MAX_OPENING_DEG 12892 
 #define Kp_correction_margin 0.3 //Quite random value, to be readapted by the simulator later
 //#define Td_correction_margin 0 // No derivator yet, lets keep it simple for now
 //#define Ki_correction_margin 0 //No integrator either
-#define Central_angle_max_margins 88.15 //To be defined precisely, lets do it with this value for now
+#define Central_angle_max_margins 5566 
+
+
+//some geometric constants
+#define G_GEOM 51.5372
+#define GAMA_GEOM 0.5569
+#define WX_GEOM -27.4
+#define D_GEOM 52.35
+#define P_GEOM 1.5
+#define W0Y_GEOM -8.5998
 
 
 extern UART_HandleTypeDef huart1;
 
-//float correction_margin_error_integration = 0;
-//float correction_margin_last_error = 0;
+float correction_margin_error_integration = 0;
+float correction_margin_last_error = 0;
 char command_string[10];
 
 
 int tab_deg_to_inc_converter(float degrees_angle) {
-    int inc = -(int)(degrees_angle*75000/360); //3000 inc/evolution, 1:25reductor
+    int inc = -(int)(degrees_angle*1024/360); //3000 inc/evolution, 1:25reductor
     return inc;
+}
+
+float flaps2motor(float beta_deg)
+{
+	float  Xx = g*sin(deg2rad(beta_deg)-GAMA_GEOM);
+	float  Xy = g*cos(deg2rad(beta_deg)-GAMA_GEOM);
+	float a_wy = 1;
+	float b_wy = -2*Xy;
+	float c_wy = Xy*Xy + (Xx-Wx)*(Xx-Wx) - D_GEOM*D_GEOM;
+	float Wy = (-b_wy - sqrt(b_wy*b_wy - 4*a_wy*c_wy))/(2*a_wy);
+	float alpha_rad = (Wy - W0Y_GEOM)*2*PI/P_GEOM;
+	return rad2deg(alpha_rad);
+}
+
+float rad2deg(float angle_rad)
+{
+	return angle_rad*180/PI;
+}
+float deg2rad(float angle_deg)
+{
+	return angle_deg*PI/180;
 }
 
 char* do_string_command(char first, char second, int number)
@@ -84,9 +115,9 @@ void aerobrakes_control_init(void) {
 // controller properties
 //	command = "SP10000\r";							MAXIMUM SPEED in inc/min
 //	HAL_UART_Transmit(&huart1, command, 8, 30);
-	command = "I1\r";
+	command = "I5\r";											//    READAPT PID PARAMS FOR FLAPS
 	HAL_UART_Transmit(&huart1, command, 3, 30);
-	command = "PP255\r";
+	command = "PP20\r";
 	HAL_UART_Transmit(&huart1, command, 6, 30);
 	command = "PD5\r";
 	HAL_UART_Transmit(&huart1, command, 4, 30);
@@ -168,18 +199,18 @@ float angle_tab(float altitude, float speed) {
 
 void command_aerobrake_controller(float altitude, float speed)
 {
-    float opt_act_position_deg = angle_tab(altitude, speed);
+	float angle_flaps_c = angle_tab(altitude, speed);
 //    float opt_act_position_deg = 0.0;
-    int opt_act_position_inc = tab_deg_to_inc_converter(opt_act_position_deg);
-    int central_inc_max_margins = tab_deg_to_inc_converter(Central_angle_max_margins);
-    int full_close_inc = tab_deg_to_inc_converter(0.0);
-    int full_open_inc = tab_deg_to_inc_converter(MAX_OPENING_DEG);
+    int opt_act_position_inc = tab_deg_to_inc_converter(flaps2motor(angle_flaps_c));
+    int central_inc_max_margins = tab_deg_to_inc_converter(flaps2motor(Central_angle_max_margins));
+    int full_close_inc = tab_deg_to_inc_converter(flaps2motor(0.0));
+    int full_open_inc = tab_deg_to_inc_converter(flaps2motor(MAX_OPENING_DEG));
     int inc_error = central_inc_max_margins - opt_act_position_inc;
     int command_inc;
 
     // PAS DE CONTROLE PID si on est en dehors de la bande de controle;
-    //pas de accumulation de l'erreur non-plus, pour Ã©viter le wipe-out.
-    //On passe en mode controle PID que lorsque l'on est Ã  l'intÃ©rieur de la bande de controle
+    //pas de accumulation de l'erreur non-plus, pour éviter le wipe-out.
+    //On passe en mode controle PID que lorsque l'on est à l'intérieur de la bande de controle
     if(opt_act_position_inc <= full_close_inc || opt_act_position_inc >= full_open_inc)
     {
     	command_inc = opt_act_position_inc;
