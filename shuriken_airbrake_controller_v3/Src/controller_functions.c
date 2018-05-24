@@ -13,15 +13,15 @@
 
 #define MAX_OPENING_DEG 172.8
 #define Kp_correction_margin 0.5 //Quite random value, to be readapted by the simulator later
-#define Td_correction_margin 0 // No derivator yet, lets keep it simple for now
-#define Ki_correction_margin 0 //No integrator either
+//#define Td_correction_margin 0 // No derivator yet, lets keep it simple for now
+//#define Ki_correction_margin 0 //No integrator either
 #define Central_angle_max_margins 88.15 //To be defined precisely, lets do it with this value for now
 
 
 extern UART_HandleTypeDef huart1;
 
-float correction_margin_error_integration = 0;
-float correction_margin_last_error = 0;
+//float correction_margin_error_integration = 0;
+//float correction_margin_last_error = 0;
 char command_string[10];
 
 
@@ -178,8 +178,8 @@ void command_aerobrake_controller(float altitude, float speed)
     int command_inc;
 
     // PAS DE CONTROLE PID si on est en dehors de la bande de controle;
-    //pas de accumulation de l'erreur non-plus, pour éviter le wipe-out.
-    //On passe en mode controle PID que lorsque l'on est à l'intérieur de la bande de controle
+    //pas de accumulation de l'erreur non-plus, pour Ã©viter le wipe-out.
+    //On passe en mode controle PID que lorsque l'on est Ã  l'intÃ©rieur de la bande de controle
     if(opt_act_position_inc <= full_close_inc || opt_act_position_inc >= full_open_inc)
     {
     	command_inc = opt_act_position_inc;
@@ -188,8 +188,9 @@ void command_aerobrake_controller(float altitude, float speed)
     }
     else
     {
-        correction_margin_error_integration += inc_error;
-        command_inc = opt_act_position_inc - Kp_correction_margin*inc_error - Td_correction_margin*(inc_error-correction_margin_last_error) - Ki_correction_margin*correction_margin_error_integration;
+//        correction_margin_error_integration += inc_error;
+//        command_inc = opt_act_position_inc - Kp_correction_margin*inc_error - Td_correction_margin*(inc_error-correction_margin_last_error) - Ki_correction_margin*correction_margin_error_integration;
+        command_inc = opt_act_position_inc - Kp_correction_margin*inc_error;
         if(command_inc <= full_close_inc)
         	command_inc = full_close_inc;
         else if(command_inc >= full_open_inc)
