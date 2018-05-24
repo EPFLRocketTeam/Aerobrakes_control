@@ -26,7 +26,7 @@
 #define D_GEOM 52.35
 #define P_GEOM 1.5
 #define W0Y_GEOM -8.5998
-
+#define PI 3.1416
 
 extern UART_HandleTypeDef huart1;
 
