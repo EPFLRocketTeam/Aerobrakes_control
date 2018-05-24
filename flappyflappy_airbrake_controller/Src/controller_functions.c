@@ -107,7 +107,7 @@ void aerobrakes_control_init(void) {
 //position limits
 	command = "LL1\r";
 	HAL_UART_Transmit(&huart1, command, 5, 30);
-	int max_inc = tab_deg_to_inc_converter(MAX_OPENING_DEG - 2); //" degrees for safety.
+	int max_inc = tab_deg_to_inc_converter(MAX_OPENING_DEG); //" degrees for safety.
 	do_string_command('L', 'L', max_inc);
 	HAL_UART_Transmit(&huart1, command_string, 9, 30);
 	command = "APL1\r";
@@ -115,12 +115,14 @@ void aerobrakes_control_init(void) {
 // controller properties
 //	command = "SP10000\r";							MAXIMUM SPEED in inc/min
 //	HAL_UART_Transmit(&huart1, command, 8, 30);
-	command = "I5\r";											//    READAPT PID PARAMS FOR FLAPS
-	HAL_UART_Transmit(&huart1, command, 3, 30);
-	command = "PP20\r";
+	command = "POR15\r";											//    READAPT PID PARAMS FOR FLAPS
 	HAL_UART_Transmit(&huart1, command, 6, 30);
-	command = "PD5\r";
-	HAL_UART_Transmit(&huart1, command, 4, 30);
+	command = "I1\r";											//    READAPT PID PARAMS FOR FLAPS
+	HAL_UART_Transmit(&huart1, command, 3, 30);
+	command = "PP225\r";
+	HAL_UART_Transmit(&huart1, command, 6, 30);
+	command = "PD50\r";
+	HAL_UART_Transmit(&huart1, command, 5, 30);
 	command = "LPC1000\r"; // peak current max, to be redefined
 	HAL_UART_Transmit(&huart1, command, 8, 30);
 	command = "LCC800\r"; // continuous current max_to be redefined
@@ -209,8 +211,8 @@ void command_aerobrake_controller(float altitude, float speed)
     int command_inc;
 
     // PAS DE CONTROLE PID si on est en dehors de la bande de controle;
-    //pas de accumulation de l'erreur non-plus, pour éviter le wipe-out.
-    //On passe en mode controle PID que lorsque l'on est à l'intérieur de la bande de controle
+    //pas de accumulation de l'erreur non-plus, pour Ã©viter le wipe-out.
+    //On passe en mode controle PID que lorsque l'on est Ã  l'intÃ©rieur de la bande de controle
     if(opt_act_position_inc <= full_close_inc || opt_act_position_inc >= full_open_inc)
     {
     	command_inc = opt_act_position_inc;
