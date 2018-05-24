@@ -76,7 +76,7 @@ void aerobrakes_control_init(void) {
 //position limits
 	command = "LL1\r";
 	HAL_UART_Transmit(&huart1, command, 5, 30);
-	int max_inc = tab_deg_to_inc_converter(MAX_OPENING_DEG - 2); //" degrees for safety.
+	int max_inc = tab_deg_to_inc_converter(MAX_OPENING_DEG); //" degrees for safety.
 	do_string_command('L', 'L', max_inc);
 	HAL_UART_Transmit(&huart1, command_string, 9, 30);
 	command = "APL1\r";
@@ -84,6 +84,8 @@ void aerobrakes_control_init(void) {
 // controller properties
 //	command = "SP10000\r";							MAXIMUM SPEED in inc/min
 //	HAL_UART_Transmit(&huart1, command, 8, 30);
+	command = "POR1\r";											//    READAPT PID PARAMS FOR FLAPS
+	HAL_UART_Transmit(&huart1, command, 5, 30);
 	command = "I1\r";
 	HAL_UART_Transmit(&huart1, command, 3, 30);
 	command = "PP255\r";
