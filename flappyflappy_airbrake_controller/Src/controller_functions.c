@@ -46,7 +46,7 @@ float flaps2motor(float beta_deg)
 	float  Xy = G_GEOM*cos(deg2rad(beta_deg)-GAMA_GEOM);
 	float a_wy = 1;
 	float b_wy = -2*Xy;
-	float c_wy = Xy*Xy + (Xx-Wx)*(Xx-WX_GEOM) - D_GEOM*D_GEOM;
+	float c_wy = Xy*Xy + (Xx-WX_GEOM)*(Xx-WX_GEOM) - D_GEOM*D_GEOM;
 	float Wy = (-b_wy - sqrt(b_wy*b_wy - 4*a_wy*c_wy))/(2*a_wy);
 	float alpha_rad = (Wy - W0Y_GEOM)*2*PI/P_GEOM;
 	return rad2deg(alpha_rad);
