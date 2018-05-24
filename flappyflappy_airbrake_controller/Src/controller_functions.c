@@ -42,8 +42,8 @@ int tab_deg_to_inc_converter(float degrees_angle) {
 
 float flaps2motor(float beta_deg)
 {
-	float  Xx = g*sin(deg2rad(beta_deg)-GAMA_GEOM);
-	float  Xy = g*cos(deg2rad(beta_deg)-GAMA_GEOM);
+	float  Xx = G_GEOM*sin(deg2rad(beta_deg)-GAMA_GEOM);
+	float  Xy = G_GEOM*cos(deg2rad(beta_deg)-GAMA_GEOM);
 	float a_wy = 1;
 	float b_wy = -2*Xy;
 	float c_wy = Xy*Xy + (Xx-Wx)*(Xx-Wx) - D_GEOM*D_GEOM;
