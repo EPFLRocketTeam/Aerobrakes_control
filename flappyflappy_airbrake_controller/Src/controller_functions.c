@@ -40,6 +40,15 @@ int tab_deg_to_inc_converter(float degrees_angle) {
     return inc;
 }
 
+float rad2deg(float angle_rad)
+{
+	return angle_rad*180/PI;
+}
+float deg2rad(float angle_deg)
+{
+	return angle_deg*PI/180;
+}
+
 float flaps2motor(float beta_deg)
 {
 	float  Xx = G_GEOM*sin(deg2rad(beta_deg)-GAMA_GEOM);
@@ -52,14 +61,6 @@ float flaps2motor(float beta_deg)
 	return rad2deg(alpha_rad);
 }
 
-float rad2deg(float angle_rad)
-{
-	return angle_rad*180/PI;
-}
-float deg2rad(float angle_deg)
-{
-	return angle_deg*PI/180;
-}
 
 char* do_string_command(char first, char second, int number)
 {
