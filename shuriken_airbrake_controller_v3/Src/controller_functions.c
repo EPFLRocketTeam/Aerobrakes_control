@@ -135,6 +135,7 @@ float angle_tab(float altitude, float speed) {
 	{
 		int j;
 		float mean_speed_vector[TABLE_DIFF_SPEEDS_SAME_ALTITUDE];
+		float mean_angle_vector[TABLE_DIFF_SPEEDS_SAME_ALTITUDE];
 		while(look_up_tab[index_altitude][0] < altitude)
 		{
 			index_altitude += TABLE_DIFF_SPEEDS_SAME_ALTITUDE;
@@ -143,6 +144,7 @@ float angle_tab(float altitude, float speed) {
 		for(j=0;j<TABLE_DIFF_SPEEDS_SAME_ALTITUDE; j++)
 		{
 			mean_speed_vector[j] = phi*look_up_tab[index_altitude-TABLE_DIFF_SPEEDS_SAME_ALTITUDE+j][1] + (1-phi)*look_up_tab[index_altitude+j][1];
+			mean_angle_vector[j] = phi*look_up_tab[index_altitude-TABLE_DIFF_SPEEDS_SAME_ALTITUDE+j][2] + (1-phi)*look_up_tab[index_altitude+j][2];
 		}
 
 		int index_speed = 0;
@@ -161,7 +163,7 @@ float angle_tab(float altitude, float speed) {
 				index_speed += 1;
 			}
 			float theta = (speed - mean_speed_vector[index_speed-1])/(mean_speed_vector[index_speed]);
-			float mean_angle = theta*mean_speed_vector[index_speed-1] + (1-theta)*mean_speed_vector[index_speed];
+			float mean_angle = theta*mean_angle_vector[index_speed-1] + (1-theta)*mean_angle_vector[index_speed];
 			return mean_angle;
 		}
 	}

@@ -3,7 +3,7 @@ controller_functions.c:33:7:do_string_command	32	static
 controller_functions.c:48:6:motor_goto_position_inc	24	static
 controller_functions.c:58:6:controller_test	16	static
 controller_functions.c:71:6:aerobrakes_control_init	16	static
-controller_functions.c:104:6:full_close	16	static
-controller_functions.c:111:6:aerobrake_helloworld	16	static
-controller_functions.c:122:7:angle_tab	64	static
-controller_functions.c:169:6:command_aerobrake_controller	56	static
+controller_functions.c:106:6:full_close	16	static
+controller_functions.c:113:6:aerobrake_helloworld	16	static
+controller_functions.c:124:7:angle_tab	64	static
+controller_functions.c:171:6:command_aerobrake_controller	56	static

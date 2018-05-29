@@ -113,10 +113,10 @@ main (void)
 //  HAL_Delay(2000);
 //  command_aerobrake_controller(200, 100);
 //  HAL_Delay(2000);
-  command_aerobrake_controller(1500.0, 100.0); // Should be full open
-  command_aerobrake_controller(200.0, 100.0); // Should be full close
-  command_aerobrake_controller(238.0, 131.0); // Should be somewhere in between
-  command_aerobrake_controller(500.0, 80.0); // Should be full close
+//  command_aerobrake_controller(1200.0, 150.0); // Should be full close
+//  command_aerobrake_controller(1200.0, 400.0); // Should be full open
+  command_aerobrake_controller(1200.0, 250.0); // Should be somewhere in between
+  //command_aerobrake_controller(500.0, 80.0); // Should be full close
 
   //  HAL_Delay(2000);
 //  command_aerobrake_controller(238, 131);
@@ -203,7 +203,7 @@ MX_USART1_UART_Init (void)
 {
 
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 9600; // 115200
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;

@@ -12,11 +12,11 @@
 #include "look_up_tab.h"
 #include <math.h>
 
-#define MAX_OPENING_DEG 12892 
+#define MAX_OPENING_DEG 60.8
 #define Kp_correction_margin 0.3 //Quite random value, to be readapted by the simulator later
 //#define Td_correction_margin 0 // No derivator yet, lets keep it simple for now
 //#define Ki_correction_margin 0 //No integrator either
-#define Central_angle_max_margins 5566 
+#define Central_angle_max_margins 44
 
 
 //some geometric constants
@@ -36,7 +36,7 @@ char command_string[10];
 
 
 int tab_deg_to_inc_converter(float degrees_angle) {
-    int inc = -(int)(degrees_angle*1024/360); //3000 inc/evolution, 1:25reductor
+    int inc = (int)(degrees_angle*1024/360); //3000 inc/evolution, 1:25reductor
     return inc;
 }
 
@@ -60,6 +60,7 @@ float flaps2motor(float beta_deg)
 	float alpha_rad = (Wy - W0Y_GEOM)*2*PI/P_GEOM;
 	return rad2deg(alpha_rad);
 }
+
 
 
 char* do_string_command(char first, char second, int number)
@@ -108,7 +109,7 @@ void aerobrakes_control_init(void) {
 //position limits
 	command = "LL1\r";
 	HAL_UART_Transmit(&huart1, command, 5, 30);
-	int max_inc = tab_deg_to_inc_converter(MAX_OPENING_DEG); //" degrees for safety.
+	int max_inc = tab_deg_to_inc_converter(flaps2motor(MAX_OPENING_DEG)); //" degrees for safety.
 	do_string_command('L', 'L', max_inc);
 	HAL_UART_Transmit(&huart1, command_string, 9, 30);
 	command = "APL1\r";
@@ -127,7 +128,7 @@ void aerobrakes_control_init(void) {
 	command = "LPC1000\r"; // peak current max, to be redefined
 	HAL_UART_Transmit(&huart1, command, 8, 30);
 	command = "LCC800\r"; // continuous current max_to be redefined
-	HAL_UART_Transmit(&huart1, command, 8, 30);
+	HAL_UART_Transmit(&huart1, command, 7, 30);
 	//Enable
 	command = "EN\r";
 	HAL_UART_Transmit(&huart1, command, 3, 30);
@@ -144,7 +145,7 @@ void full_close(void)
 
 void aerobrake_helloworld(void)
 {
-	float angle_helloworld = 5.0;
+	float angle_helloworld = flaps2motor(5.0);
 	int angle_helloworld_inc = tab_deg_to_inc_converter(angle_helloworld);
 	motor_goto_position_inc(angle_helloworld_inc);
 	HAL_Delay(500);
@@ -167,6 +168,7 @@ float angle_tab(float altitude, float speed) {
 	{
 		int j;
 		float mean_speed_vector[TABLE_DIFF_SPEEDS_SAME_ALTITUDE];
+		float mean_angle_vector[TABLE_DIFF_SPEEDS_SAME_ALTITUDE];
 		while(look_up_tab[index_altitude][0] < altitude)
 		{
 			index_altitude += TABLE_DIFF_SPEEDS_SAME_ALTITUDE;
@@ -175,6 +177,7 @@ float angle_tab(float altitude, float speed) {
 		for(j=0;j<TABLE_DIFF_SPEEDS_SAME_ALTITUDE; j++)
 		{
 			mean_speed_vector[j] = phi*look_up_tab[index_altitude-TABLE_DIFF_SPEEDS_SAME_ALTITUDE+j][1] + (1-phi)*look_up_tab[index_altitude+j][1];
+			mean_angle_vector[j] = phi*look_up_tab[index_altitude-TABLE_DIFF_SPEEDS_SAME_ALTITUDE+j][2] + (1-phi)*look_up_tab[index_altitude+j][2];
 		}
 
 		int index_speed = 0;
@@ -193,7 +196,7 @@ float angle_tab(float altitude, float speed) {
 				index_speed += 1;
 			}
 			float theta = (speed - mean_speed_vector[index_speed-1])/(mean_speed_vector[index_speed]);
-			float mean_angle = theta*mean_speed_vector[index_speed-1] + (1-theta)*mean_speed_vector[index_speed];
+			float mean_angle = theta*mean_angle_vector[index_speed-1] + (1-theta)*mean_angle_vector[index_speed];
 			return mean_angle;
 		}
 	}
