@@ -195,7 +195,7 @@ float angle_tab(float altitude, float speed) {
 			{
 				index_speed += 1;
 			}
-			float theta = (speed - mean_speed_vector[index_speed-1])/(mean_speed_vector[index_speed]);
+			float theta = (speed - mean_speed_vector[index_speed-1])/(mean_speed_vector[index_speed] - mean_speed_vector[index_speed-1]);
 			float mean_angle = theta*mean_angle_vector[index_speed-1] + (1-theta)*mean_angle_vector[index_speed];
 			return mean_angle;
 		}
